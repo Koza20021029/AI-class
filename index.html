@@ -44,15 +44,8 @@
 
   <!-- 2. Hero Section -->
   <section id="hero" class="hero-section">
-    <!-- Ambient Background Glows with Parallax Wrappers -->
-    <div class="hero-bg-glow-wrap glow-1-wrap">
-      <div class="hero-bg-glow"></div>
-    </div>
-    <div class="hero-bg-glow-wrap glow-2-wrap">
-      <div class="hero-bg-glow-2"></div>
-    </div>
-    <!-- Floating Sparkles Background Container -->
-    <div class="hero-particles"></div>
+    <!-- WebGL Ferrofluid Shader Background Container -->
+    <div id="ferrofluid-canvas-container" class="ferrofluid-container"></div>
     <div class="hero-overlay-video-placeholder"></div>
     
     <div class="hero-content">
@@ -76,6 +69,24 @@
       </div>
     </div>
   </section>
+
+  <!-- Seamless Animated Wave Divider -->
+  <div class="ocean-wave-divider">
+    <svg viewBox="0 0 2400 120" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="wave-front-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(13, 242, 201, 0.22)" />
+          <stop offset="100%" stop-color="rgba(2, 7, 13, 0)" />
+        </linearGradient>
+        <linearGradient id="wave-back-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="rgba(226, 180, 120, 0.12)" />
+          <stop offset="100%" stop-color="rgba(2, 7, 13, 0)" />
+        </linearGradient>
+      </defs>
+      <path d="M0,60 C150,90 350,30 600,60 C850,90 1050,30 1200,60 C1350,90 1550,30 1800,60 C2050,90 2250,30 2400,60 L2400,120 L0,120 Z" class="wave-back"></path>
+      <path d="M0,70 C150,100 350,40 600,70 C850,100 1050,40 1200,70 C1350,100 1550,40 1800,70 C2050,100 2250,40 2400,70 L2400,120 L0,120 Z" class="wave-front"></path>
+    </svg>
+  </div>
 
   <!-- 3. Story Section -->
   <section id="story" class="section">
@@ -113,7 +124,7 @@
             <img src="img/Gemini_Generated_Image_3bz1g43bz1g43bz1.png" alt="台灣東海岸潮間帶生態環境" loading="lazy">
           </div>
           <!-- Stylized Badge -->
-          <div class="story-badge">
+          <div class="story-badge floating-element">
             <span class="badge-num">100%</span>
             <span class="badge-txt">風土發酵</span>
           </div>
@@ -223,58 +234,35 @@
           </div>
         </div>
         
-        <!-- TOWS Strategies Panel -->
+        <!-- TOWS Strategies Panel (Redesigned as WebGL 3D Radar) -->
         <div class="swot-strategy reveal delay-200">
           <div class="swot-strategy-header">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 24px; height: 24px; color: var(--accent-cyan);">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            <span>當代跨域設計戰略規劃 (TOWS Matrix)</span>
+            <span>當代跨域設計戰略規劃 (TOWS Matrix 互動雷達)</span>
           </div>
           
-          <div class="tows-grid">
-            <!-- SO strategy -->
-            <div class="tows-card">
-              <div class="tows-icon-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <h4>SO 成長戰略</h4>
-              <p>結合慢食浪潮，以採集風土為故事線，直擊評審與消費者對文資深度的偏好。</p>
+          <div class="tows-radar-layout">
+            <!-- Left Column: WebGL Interactive Sphere Canvas -->
+            <div class="tows-radar-visual">
+              <canvas id="tows-radar-canvas"></canvas>
+              <div class="tows-radar-hint">滑鼠按住拖曳可旋轉球體 ‧ 滾輪可縮放</div>
             </div>
             
-            <!-- WO strategy -->
-            <div class="tows-card">
-              <div class="tows-icon-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
+            <!-- Right Column: Strategic Info Panel -->
+            <div class="tows-radar-info">
+              <div class="tows-info-card">
+                <span class="tows-badge-label" id="tows-active-badge">SO</span>
+                <h3 id="tows-active-title">SO 成長戰略</h3>
+                <p id="tows-active-desc">結合慢食與里海浪潮，以採集風土為故事線，直擊評審與消費者對生態文資深度的偏好。</p>
+                <a href="#features" id="tows-active-link" class="tows-action-btn">
+                  <span>深入戰略特色</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </a>
               </div>
-              <h4>WO 扭轉戰略</h4>
-              <p>導入科學澄清與油脂排比法去腥去油，將原料不穩定的劣勢化為技術創新亮點。</p>
-            </div>
-            
-            <!-- ST strategy -->
-            <div class="tows-card">
-              <div class="tows-icon-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944A11.955 11.955 0 013.382 5.984M3 9h12m0 0v8m0-8l-8 8" />
-                </svg>
-              </div>
-              <h4>ST 防禦戰略</h4>
-              <p>遵循部落季節採集禁忌，建立契作與利益共享機制，防範流於「文化掠奪」的批判。</p>
-            </div>
-            
-            <!-- WT strategy -->
-            <div class="tows-card">
-              <div class="tows-icon-wrap">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h4>WT 消除戰略</h4>
-              <p>定位「限量體驗套組」，規避量產法規限制，從根本上減輕生態採集總量壓力。</p>
             </div>
           </div>
         </div>
@@ -293,7 +281,7 @@
       <div class="features-grid">
         <!-- Feature 1 -->
         <div class="feature-card reveal delay-100">
-          <div class="feature-icon-wrapper">
+          <div class="feature-icon-wrapper floating-element">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
             </svg>
@@ -306,7 +294,7 @@
         
         <!-- Feature 2 -->
         <div class="feature-card reveal delay-200">
-          <div class="feature-icon-wrapper">
+          <div class="feature-icon-wrapper floating-element">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
             </svg>
@@ -319,7 +307,7 @@
         
         <!-- Feature 3 -->
         <div class="feature-card reveal delay-300">
-          <div class="feature-icon-wrapper">
+          <div class="feature-icon-wrapper floating-element">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
             </svg>
@@ -390,6 +378,14 @@
       </div>
     </div>
   </section>
+
+  <!-- Seamless Animated Wave Divider -->
+  <div class="ocean-wave-divider">
+    <svg viewBox="0 0 2400 120" preserveAspectRatio="none">
+      <path d="M0,60 C150,90 350,30 600,60 C850,90 1050,30 1200,60 C1350,90 1550,30 1800,60 C2050,90 2250,30 2400,60 L2400,120 L0,120 Z" class="wave-back"></path>
+      <path d="M0,70 C150,100 350,40 600,70 C850,100 1050,40 1200,70 C1350,100 1550,40 1800,70 C2050,100 2250,40 2400,70 L2400,120 L0,120 Z" class="wave-front"></path>
+    </svg>
+  </div>
 
   <!-- 7. Image Gallery Section -->
   <section id="gallery" class="section">
@@ -612,6 +608,8 @@
   </div>
 
   <!-- JavaScript Behavior -->
+  <script src="https://cdn.jsdelivr.net/npm/gl-matrix@3.4.3/gl-matrix-min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ogl@0.0.32/dist/ogl.umd.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

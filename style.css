@@ -862,17 +862,18 @@ header {
 }
 
 .swot-item-visual {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
+  display: grid;
+  grid-template-columns: 115px 1fr;
+  gap: 0.75rem;
+  align-items: start;
 }
 
 .swot-tag {
-  display: inline-block;
-  align-self: flex-start;
+  display: block;
+  text-align: center;
   font-size: 0.72rem;
   font-weight: 700;
-  padding: 0.12rem 0.45rem;
+  padding: 0.2rem 0.45rem;
   border-radius: 4px;
   letter-spacing: 0.05em;
 }
@@ -896,8 +897,18 @@ header {
   color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
-  padding-left: 0.2rem;
   text-align: justify;
+}
+
+@media (max-width: 480px) {
+  .swot-item-visual {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .swot-tag {
+    display: inline-block;
+    align-self: flex-start;
+  }
 }
 
 .swot-strategy {
@@ -1942,3 +1953,227 @@ footer {
 }
 
 
+
+
+/* =========================================================================
+   Cultural Background Section Gradient
+   ========================================================================= */
+.cultural-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 26, 43, 0.25) 15%, rgba(8, 26, 43, 0.25) 85%, transparent 100%);
+}
+
+/* =========================================================================
+   TOWS WebGL 3D Radar Styles
+   ========================================================================= */
+.tows-radar-layout {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-top: 2rem;
+  min-height: 400px;
+}
+
+.tows-radar-visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.2 / 1;
+  background: radial-gradient(circle at 50% 50%, rgba(8, 26, 43, 0.3) 0%, transparent 70%);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.tows-radar-visual canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  outline: none;
+}
+
+.tows-radar-visual canvas:active {
+  cursor: grabbing;
+}
+
+.tows-radar-hint {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+.tows-radar-info {
+  display: flex;
+  align-items: center;
+}
+
+.tows-info-card {
+  background: rgba(2, 7, 13, 0.6);
+  border: 1px solid var(--border-active);
+  border-radius: 8px;
+  padding: 2.5rem;
+  width: 100%;
+  box-shadow: 0 15px 35px rgba(13, 242, 201, 0.05);
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.tows-badge-label {
+  display: inline-block;
+  font-family: var(--font-eng);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(13, 242, 201, 0.1);
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.05em;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tows-badge-label.gold {
+  color: var(--accent-gold);
+  background: rgba(226, 180, 120, 0.1);
+  border-color: rgba(226, 180, 120, 0.2);
+}
+
+.tows-info-card h3 {
+  font-family: var(--font-serif);
+  font-size: 1.6rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tows-info-card p {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  text-align: justify;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.tows-info-card h3.fade-out,
+.tows-info-card p.fade-out,
+.tows-badge-label.fade-out {
+  opacity: 0;
+  transform: translateY(5px);
+}
+
+.tows-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-cyan);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+
+.tows-action-btn:hover {
+  color: var(--accent-gold);
+  transform: translateX(3px);
+}
+
+@media (max-width: 768px) {
+  .tows-radar-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    min-height: auto;
+  }
+  .tows-radar-visual {
+    aspect-ratio: 1.1 / 1;
+  }
+}
+
+
+/* =========================================================================
+   Global Bioluminescent Marine Plankton Background & Wave Dividers
+   ========================================================================= */
+#global-plankton-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Layered Animated Wave Dividers */
+.ocean-wave-divider {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  overflow: hidden;
+  line-height: 0;
+  background: transparent;
+  z-index: 2;
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
+.ocean-wave-divider svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  display: block;
+}
+
+.ocean-wave-divider .wave-back {
+  fill: url(#wave-back-grad);
+  animation: wave-slide-slow 22s linear infinite;
+}
+
+.ocean-wave-divider .wave-front {
+  fill: url(#wave-front-grad);
+  animation: wave-slide-fast 14s linear infinite;
+}
+
+@keyframes wave-slide-fast {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes wave-slide-slow {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+/* Micro floating animation for cards & badges */
+.floating-element {
+  animation: float-drift-anim 6s ease-in-out infinite;
+}
+
+.floating-element-delayed {
+  animation: float-drift-anim 8s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes float-drift-anim {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Eliminate WebGL subpixel scaling 1px line seams on Windows high-DPI scaling screens */
+.ferrofluid-container canvas {
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: calc(100% + 4px) !important;
+  height: calc(100% + 4px) !important;
+  border: none !important;
+  outline: none !important;
+  pointer-events: none;
+}
