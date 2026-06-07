@@ -199,6 +199,36 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // =========================================================================
+  // 3.5 Interactive SWOT Matrix - Horizontal Tab Toggle
+  // =========================================================================
+  const swotCards = document.querySelectorAll(".swot-card[data-swot-card]");
+  swotCards.forEach(card => {
+    const pills = card.querySelectorAll(".swot-pill");
+    const descItems = card.querySelectorAll(".swot-desc-item");
+    
+    pills.forEach(pill => {
+      const triggerEvent = () => {
+        const index = pill.getAttribute("data-pill");
+        
+        // Update active pill
+        pills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        
+        // Update active description
+        descItems.forEach(item => {
+          item.classList.remove("active");
+          if (item.getAttribute("data-desc") === index) {
+            item.classList.add("active");
+          }
+        });
+      };
+      
+      pill.addEventListener("click", triggerEvent);
+      pill.addEventListener("mouseenter", triggerEvent);
+    });
+  });
+
+  // =========================================================================
   // 4. Interactive Scenarios - Tabs Toggle
   // =========================================================================
   const scenarioTabs = document.querySelectorAll(".scenario-tab");
@@ -231,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
       desc: "採集黑潮礁岩海菜與日曬海鹽結晶，編織起極致的深海鹹鮮旨味。"
     },
     {
-      src: "img/Gemini_Generated_Image_3bz1g43bz1g43bz1 (1).png",
+      src: "img/clear_cocktail_ritual.jpg",
       title: "極致澄澈酒液呈現",
       category: "Scientific Clarification",
       desc: "科學澄清與低溫減壓蒸餾技術，將渾濁釀造液化為剔透如水的精緻酒體。"
@@ -243,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
       desc: "炙烤飛魚乾碎屑與碳化木盒，將山海間的焦香完美封存於琥珀嗅覺中。"
     },
     {
-      src: "img/Gemini_Generated_Image_qa7z2iqa7z2iqa7z.png",
+      src: "img/story_ritual_kit.jpg",
       title: "限量文化體驗儀式套組",
       category: "Experiential Ritual Kit",
       desc: "構樹皮紙、火山岩座與海鹽晶體床，全面觸發觸覺、嗅覺與視覺的永續體驗。"

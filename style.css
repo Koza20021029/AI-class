@@ -1117,61 +1117,87 @@ header {
   top: 2px;
 }
 
-/* SWOT Tag List Styling */
-.swot-list {
+/* SWOT Tabs Layout */
+.swot-pills {
   display: flex;
-  flex-direction: column;
-  gap: 1rem !important;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  margin-top: 1rem;
 }
 
-.swot-item-visual {
-  display: grid;
-  grid-template-columns: 115px 1fr;
-  gap: 0.75rem;
-  align-items: start;
-}
-
-.swot-tag {
-  display: block;
-  text-align: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  padding: 0.2rem 0.45rem;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-}
-
-.swot-card:nth-child(1) .swot-tag, /* S: Cyan */
-.swot-card:nth-child(3) .swot-tag { /* O: Cyan */
-  background: rgba(13, 242, 201, 0.12);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(13, 242, 201, 0.2);
-}
-
-.swot-card:nth-child(2) .swot-tag, /* W: Gold */
-.swot-card:nth-child(4) .swot-tag { /* T: Gold */
-  background: rgba(226, 180, 120, 0.12);
-  color: var(--accent-gold);
-  border: 1px solid rgba(226, 180, 120, 0.2);
-}
-
-.swot-item-visual p {
-  font-size: 0.88rem;
+.swot-pill {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-glass);
   color: var(--text-secondary);
-  line-height: 1.5;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  letter-spacing: 0.05em;
+  outline: none;
+}
+
+.swot-pill:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Color themes for active states */
+.swot-card[data-swot-card="S"] .swot-pill.active,
+.swot-card[data-swot-card="O"] .swot-pill.active {
+  background: var(--accent-cyan);
+  color: #02070d;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(13, 242, 201, 0.3);
+}
+
+.swot-card[data-swot-card="W"] .swot-pill.active,
+.swot-card[data-swot-card="T"] .swot-pill.active {
+  background: var(--accent-gold);
+  color: #02070d;
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 15px rgba(226, 180, 120, 0.3);
+}
+
+/* SWOT Content Panel */
+.swot-content-panel {
+  min-height: 70px;
+  position: relative;
+  background: rgba(8, 26, 43, 0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.swot-desc-item {
+  display: none;
+  opacity: 0;
+}
+
+.swot-desc-item.active {
+  display: block;
+  opacity: 1;
+  animation: swotFadeIn 0.35s ease forwards;
+}
+
+.swot-desc-item p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
   margin: 0;
   text-align: justify;
 }
 
-@media (max-width: 480px) {
-  .swot-item-visual {
-    grid-template-columns: 1fr;
-    gap: 0.35rem;
-  }
-  .swot-tag {
-    display: inline-block;
-    align-self: flex-start;
-  }
+@keyframes swotFadeIn {
+  0% { opacity: 0; transform: translateY(5px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .swot-strategy {
