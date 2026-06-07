@@ -235,35 +235,72 @@ h1, h2, h3, .serif-title {
 
 /* Gradient Highlight Texts */
 .gradient-text {
-  background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-gold) 100%);
+  background: linear-gradient(to bottom, var(--accent-cyan) 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Animated Gradient text for premium shine effect with entrance animation built-in */
 .gradient-text-animated {
-  display: inline-block; /* Required for transform to apply to span */
-  background: linear-gradient(120deg, var(--accent-cyan) 0%, var(--accent-gold) 30%, var(--accent-cyan) 60%, var(--accent-gold) 100%);
-  background-size: 200% auto;
+  display: inline-block;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.title-char {
+  display: inline-block;
+  position: relative;
+  opacity: 0;
+  transform: translate3d(var(--rx, 0), var(--ry, 0), var(--rz, 0)) 
+             rotateX(var(--rotX, 0deg)) 
+             rotateY(var(--rotY, 0deg)) 
+             rotateZ(var(--rotZ, 0deg)) 
+             scale(var(--scale, 1));
+  filter: blur(12px);
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  background: linear-gradient(to bottom, var(--accent-cyan) 0%, var(--accent-gold) 50%, var(--accent-cyan) 100%);
+  background-size: auto 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Animates entrance first (using both fill mode to avoid flash) and loops shine flow */
-  animation: hero-fade-in-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both, text-shine-flow 5s linear infinite;
+  animation: title-char-assemble 2.5s cubic-bezier(0.19, 1, 0.22, 1) var(--delay, 0s) forwards,
+             text-shine-flow 8s linear infinite;
+}
+
+@keyframes title-char-assemble {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(1);
+    filter: blur(0px);
+  }
 }
 
 @keyframes text-shine-flow {
-  0% { background-position: 0% center; }
-  100% { background-position: -200% center; }
+  0% { background-position: center 0%; }
+  100% { background-position: center -200%; }
 }
 
-/* Individual letter reveal fade */
 .char-fade {
   display: inline-block;
   opacity: 0;
   transform: translateY(10px);
   animation: char-reveal-anim 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes char-reveal-anim {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Hero Entrance Animation for load-time visual build */
@@ -289,48 +326,274 @@ h1, h2, h3, .serif-title {
 }
 
 
-/* Story Milestones Layout */
+/* Story Milestones Layout (Interactive Tabs) */
 .story-milestones {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-top: 3rem;
+  gap: 1.5rem;
+  margin: 2rem 0;
 }
 
 .milestone-item {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.01);
   border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 6px;
-  padding: 1.5rem;
+  padding: 1.25rem 1rem;
   transition: var(--transition-smooth);
+  cursor: pointer;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.milestone-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--accent-cyan);
+  transition: var(--transition-fast);
+}
+
+.milestone-item[data-step="2"]::after,
+.milestone-item[data-step="3"]::after {
+  background: var(--accent-gold);
 }
 
 .milestone-item:hover {
-  background: rgba(13, 242, 201, 0.04);
-  border-color: rgba(13, 242, 201, 0.2);
-  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-3px);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.milestone-item.active {
+  background: rgba(8, 26, 43, 0.6);
+  border-color: rgba(13, 242, 201, 0.3);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.milestone-item[data-step="2"].active,
+.milestone-item[data-step="3"].active {
+  border-color: rgba(226, 180, 120, 0.3);
+}
+
+.milestone-item.active::after {
+  width: 100%;
 }
 
 .milestone-num {
   font-family: var(--font-eng);
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: var(--accent-cyan);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.milestone-item[data-step="2"] .milestone-num,
+.milestone-item[data-step="3"] .milestone-num {
+  color: var(--accent-gold);
 }
 
 .milestone-title {
   font-family: var(--font-serif);
-  font-size: 1.15rem;
-  color: var(--accent-gold);
-  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Story Details Wrapper & Panels */
+.story-details-wrapper {
+  position: relative;
+  margin-top: 1.5rem;
+  min-height: 220px;
+}
+
+.story-detail-panel {
+  display: none;
+  opacity: 0;
+}
+
+.story-detail-panel.active {
+  display: block;
+  opacity: 1;
+  animation: storyFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.story-step-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  text-align: justify;
+  margin-bottom: 1.5rem;
+}
+
+.story-diary {
+  background: var(--bg-glass-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: 4px;
+  padding: 1.25rem 1.5rem;
+}
+
+.story-detail-panel[data-step-panel="2"] .story-diary,
+.story-detail-panel[data-step-panel="3"] .story-diary {
+  border-left-color: var(--accent-gold);
+}
+
+.diary-tag {
+  font-family: var(--font-serif);
+  font-size: 0.8rem;
+  color: var(--accent-cyan);
+  display: block;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
   font-weight: 600;
 }
 
-.milestone-desc {
-  font-size: 0.9rem;
+.story-detail-panel[data-step-panel="2"] .diary-tag,
+.story-detail-panel[data-step-panel="3"] .diary-tag {
+  color: var(--accent-gold);
+}
+
+.diary-content {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Story Visual & Hotspots */
+.story-visual-container {
+  display: none;
+  opacity: 0;
+  position: relative;
+  width: 100%;
+}
+
+.story-visual-container.active {
+  display: block;
+  opacity: 1;
+  animation: storyFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.story-hotspot {
+  position: absolute;
+  z-index: 25;
+}
+
+.hotspot-anchor {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px rgba(var(--accent-cyan-rgb), 0.8);
+  position: relative;
+  cursor: pointer;
+}
+
+.hotspot-anchor::after {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent-cyan);
+  animation: hotspotPulse 2s infinite ease-out;
+  pointer-events: none;
+}
+
+.story-visual-container[data-step-visual="2"] .hotspot-anchor,
+.story-visual-container[data-step-visual="3"] .hotspot-anchor {
+  background: var(--accent-gold);
+  box-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.8);
+}
+
+.story-visual-container[data-step-visual="2"] .hotspot-anchor::after,
+.story-visual-container[data-step-visual="3"] .hotspot-anchor::after {
+  border-color: var(--accent-gold);
+}
+
+@keyframes hotspotPulse {
+  0% { transform: scale(0.7); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.hotspot-popup {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  width: 240px;
+  background: rgba(4, 15, 26, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: 6px;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.hotspot-popup::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0;
+  border-style: solid;
+  border-color: rgba(4, 15, 26, 0.95) transparent;
+  display: block;
+  width: 0;
+}
+
+.story-hotspot:hover .hotspot-popup,
+.story-hotspot.active .hotspot-popup {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.hotspot-popup h4 {
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  color: var(--accent-cyan);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.story-visual-container[data-step-visual="2"] .hotspot-popup h4,
+.story-visual-container[data-step-visual="3"] .hotspot-popup h4 {
+  color: var(--accent-gold);
+}
+
+.hotspot-popup p {
+  font-size: 0.8rem;
   color: var(--text-secondary);
+  line-height: 1.5;
   text-align: justify;
+  margin: 0;
+}
+
+@keyframes storyFadeIn {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* Header & Nav */
@@ -1837,6 +2100,43 @@ footer {
     gap: 3rem;
   }
   
+  .story-milestones {
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+  }
+  
+  .milestone-item {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .milestone-num {
+    font-size: 1.25rem;
+    margin-bottom: 0.1rem;
+  }
+  
+  .milestone-title {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  
+  .story-details-wrapper {
+    min-height: 250px;
+  }
+
+  .hotspot-popup {
+    width: 200px;
+    padding: 0.75rem;
+    bottom: 22px;
+  }
+  
+  .hotspot-popup h4 {
+    font-size: 0.85rem;
+  }
+  
+  .hotspot-popup p {
+    font-size: 0.75rem;
+  }
+  
   .story-badge {
     bottom: -15px;
     right: -15px;
@@ -1956,10 +2256,79 @@ footer {
 
 
 /* =========================================================================
-   Cultural Background Section Gradient
+   Section Background Gradients (Seamless Transitions)
    ========================================================================= */
 .cultural-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 26, 43, 0.22) 15%, rgba(8, 26, 43, 0.22) 85%, transparent 100%);
+}
+
+.scenarios-section {
   background: linear-gradient(180deg, transparent 0%, rgba(8, 26, 43, 0.25) 15%, rgba(8, 26, 43, 0.25) 85%, transparent 100%);
+}
+
+.details-section {
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 26, 43, 0.2) 15%, rgba(8, 26, 43, 0.2) 85%, transparent 100%);
+}
+
+/* =========================================================================
+   TOWS WebGL Fallback Button Interface Styles
+   ========================================================================= */
+.tows-radar-fallback {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 280px;
+  flex-direction: column;
+  gap: 0.75rem;
+  z-index: 5;
+}
+
+.tows-radar-visual.fallback-active .tows-radar-fallback {
+  display: flex;
+}
+
+.tows-radar-visual.fallback-active canvas,
+.tows-radar-visual.fallback-active .tows-radar-hint {
+  display: none !important;
+}
+
+.tows-fallback-btn {
+  background: rgba(8, 26, 43, 0.6);
+  border: 1px solid var(--border-glass);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 0.85rem 1.25rem;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+  outline: none;
+}
+
+.tows-fallback-btn:hover {
+  background: var(--bg-glass-hover);
+  border-color: rgba(var(--accent-cyan-rgb), 0.3);
+  color: var(--text-primary);
+  box-shadow: 0 0 15px rgba(var(--accent-cyan-rgb), 0.15);
+}
+
+.tows-fallback-btn.active {
+  background: rgba(13, 242, 201, 0.1);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(var(--accent-cyan-rgb), 0.2);
+}
+
+.tows-fallback-btn.active[data-index="1"],
+.tows-fallback-btn.active[data-index="3"] {
+  background: rgba(226, 180, 120, 0.1);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+  box-shadow: 0 0 15px rgba(var(--accent-gold-rgb), 0.2);
 }
 
 /* =========================================================================

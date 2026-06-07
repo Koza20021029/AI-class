@@ -1,64 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
   // =========================================================================
-  // 0. Cover Page Special Effects: Particle Sparkles & Mouse Parallax
+  // 0. Title & Slogan cinematic reveal animations
   // =========================================================================
-  const heroSection = document.getElementById("hero");
-  const glow1Wrap = document.querySelector(".glow-1-wrap");
-  const glow2Wrap = document.querySelector(".glow-2-wrap");
-  const particlesContainer = document.querySelector(".hero-particles");
 
-  // Mouse Parallax Effect (Desktop only for performance)
-  if (heroSection && glow1Wrap && glow2Wrap && window.innerWidth > 768) {
-    heroSection.addEventListener("mousemove", (e) => {
-      const { clientX, clientY } = e;
-      const width = window.innerWidth;
-      const height = window.innerHeight;
+  // Title letter-by-letter shattered assembly reveal
+  const title = document.querySelector(".gradient-text-animated");
+  if (title) {
+    const titleText = title.textContent.trim();
+    title.innerHTML = "";
+    [...titleText].forEach((char, index) => {
+      const span = document.createElement("span");
+      span.className = "title-char";
+      span.textContent = char;
       
-      const moveX = (clientX / width) - 0.5;
-      const moveY = (clientY / height) - 0.5;
+      // Calculate staggered delay starting from 0.2s, with 0.08s increment
+      span.style.setProperty("--delay", `${0.2 + (index * 0.08)}s`);
       
-      glow1Wrap.style.transform = `translate(${moveX * 60}px, ${moveY * 60}px)`;
-      glow2Wrap.style.transform = `translate(${moveX * -40}px, ${moveY * -40}px)`;
+      // Generate random offsets and rotations for the "shattered" look
+      const randomX = (Math.random() - 0.5) * 120; // random shift X (-60px to +60px)
+      const randomY = (Math.random() - 0.5) * 120 - 45; // random shift Y
+      const randomZ = (Math.random() - 0.5) * 100; // random shift Z
+      const randomRotX = (Math.random() - 0.5) * 180; // random rotation X
+      const randomRotY = (Math.random() - 0.5) * 180; // random rotation Y
+      const randomRotZ = (Math.random() - 0.5) * 90; // random rotation Z
+      const randomScale = 0.2 + Math.random() * 0.5; // random scale (0.2 to 0.7)
+      
+      span.style.setProperty("--rx", `${randomX}px`);
+      span.style.setProperty("--ry", `${randomY}px`);
+      span.style.setProperty("--rz", `${randomZ}px`);
+      span.style.setProperty("--rotX", `${randomRotX}deg`);
+      span.style.setProperty("--rotY", `${randomRotY}deg`);
+      span.style.setProperty("--rotZ", `${randomRotZ}deg`);
+      span.style.setProperty("--scale", `${randomScale}`);
+      
+      title.appendChild(span);
     });
-  }
-
-  // Floating Sparkles Plankton Generator
-  if (particlesContainer) {
-    const particleCount = 32; // Increased count
-    for (let i = 0; i < particleCount; i++) {
-      createParticle();
-    }
-  }
-
-  function createParticle() {
-    const particle = document.createElement("div");
-    particle.className = "hero-particle";
-    
-    // 35% chance to spawn a gold particle instead of cyan
-    if (Math.random() < 0.35) {
-      particle.classList.add("gold");
-    }
-    
-    // Random sizes (4px to 12px)
-    const size = Math.random() * 8 + 4;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    
-    // Random positions along the width
-    particle.style.left = `${Math.random() * 100}%`;
-    
-    // Random animation speed (10s to 22s)
-    const duration = Math.random() * 12 + 10;
-    particle.style.animationDuration = `${duration}s`;
-    
-    // Random delay (negative delay starts animation mid-cycle)
-    particle.style.animationDelay = `${Math.random() * -22}s`;
-    
-    // Random horizontal drift
-    const drift = Math.random() * 160 - 80; // -80px to 80px
-    particle.style.setProperty("--drift", `${drift}px`);
-    
-    particlesContainer.appendChild(particle);
   }
 
   // Slogan letter-by-letter cinematic reveal
@@ -69,8 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
     [...sloganText].forEach((char, index) => {
       const span = document.createElement("span");
       span.className = "char-fade";
-      // Delay increments of 0.04s, starting after title animation
-      span.style.animationDelay = `${0.7 + (index * 0.04)}s`;
+      // Delay increments of 0.04s, starting after title has assembled (approx 1.8s)
+      span.style.animationDelay = `${1.8 + (index * 0.04)}s`;
       span.textContent = char;
       slogan.appendChild(span);
     });
@@ -149,6 +125,77 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
     });
+  });
+
+  // =========================================================================
+  // 3. Interactive Cultural Story - Milestones & Hotspots Switcher
+  // =========================================================================
+  const milestoneItems = document.querySelectorAll(".milestone-item");
+  const detailPanels = document.querySelectorAll(".story-detail-panel");
+  const visualContainers = document.querySelectorAll(".story-visual-container");
+  const badgeVal = document.getElementById("story-badge-value");
+  const badgeTxt = document.getElementById("story-badge-label");
+
+  const badgeConfig = {
+    1: { value: "100%", text: "風土採集" },
+    2: { value: "72hr", text: "九芎慢燻" },
+    3: { value: "30day", text: "低溫熟成" }
+  };
+
+  milestoneItems.forEach(item => {
+    item.addEventListener("click", () => {
+      const step = item.getAttribute("data-step");
+      
+      // Toggle active milestone tab
+      milestoneItems.forEach(mi => mi.classList.remove("active"));
+      item.classList.add("active");
+      
+      // Toggle active detail text panel
+      detailPanels.forEach(panel => {
+        panel.classList.remove("active");
+        if (panel.getAttribute("data-step-panel") === step) {
+          panel.classList.add("active");
+        }
+      });
+      
+      // Toggle active visual container
+      visualContainers.forEach(container => {
+        container.classList.remove("active");
+        if (container.getAttribute("data-step-visual") === step) {
+          container.classList.add("active");
+        }
+      });
+      
+      // Update floating badge content dynamically
+      if (badgeVal && badgeTxt && badgeConfig[step]) {
+        badgeVal.textContent = badgeConfig[step].value;
+        badgeTxt.textContent = badgeConfig[step].text;
+      }
+    });
+  });
+
+  // Hotspot click toggle logic for mobile and touch support
+  const hotspots = document.querySelectorAll(".story-hotspot");
+  hotspots.forEach(hotspot => {
+    const anchor = hotspot.querySelector(".hotspot-anchor");
+    if (anchor) {
+      anchor.addEventListener("click", (e) => {
+        e.stopPropagation();
+        
+        // Toggle current hotspot popup, close others in active container
+        const wasActive = hotspot.classList.contains("active");
+        hotspots.forEach(h => h.classList.remove("active"));
+        
+        if (!wasActive) {
+          hotspot.classList.add("active");
+        }
+      });
+    }
+  });
+
+  // Close hotspots if user clicks anywhere else
+  document.addEventListener("click", () => {
+    hotspots.forEach(h => h.classList.remove("active"));
   });
 
   // =========================================================================
@@ -449,6 +496,11 @@ const initFerrofluid = () => {
   const container = document.getElementById("ferrofluid-canvas-container");
   const hero = document.getElementById("hero");
   if (!container || !hero) return;
+
+  if (typeof window.ogl === "undefined") {
+    console.warn("Ferrofluid Background: OGL library not found. Gracefully degrading.");
+    return;
+  }
 
   const config = {
     colors: ['#02070d', '#05111d', '#0b233a', '#0df2c9', '#e2b478', '#0df2c9', '#05111d', '#02070d'],
@@ -755,7 +807,10 @@ const initFerrofluid = () => {
 
 
 // --- WebGL 1. TOWS 3D Radar Code ---
-const { mat4, quat, vec2, vec3 } = glMatrix;
+let mat4 = window.glMatrix ? window.glMatrix.mat4 : null;
+let quat = window.glMatrix ? window.glMatrix.quat : null;
+let vec2 = window.glMatrix ? window.glMatrix.vec2 : null;
+let vec3 = window.glMatrix ? window.glMatrix.vec3 : null;
 
 class Face {
   constructor(a, b, c) {
@@ -1586,6 +1641,8 @@ class InfiniteGridMenu {
 
 function initTowsRadar() {
   const canvas = document.getElementById("tows-radar-canvas");
+  const container = document.getElementById("tows-radar-container");
+  const fallbackEl = document.getElementById("tows-radar-fallback");
   if (!canvas) return;
 
   const towsItems = [
@@ -1642,12 +1699,49 @@ function initTowsRadar() {
         linkEl.setAttribute("href", item.link);
 
         // Fade in
+        badgeEl.classList.remove("glow-text"); // ensure no conflicts
         badgeEl.classList.remove("fade-out");
         titleEl.classList.remove("fade-out");
         descEl.classList.remove("fade-out");
       }, 300);
     }
   };
+
+  // Check for library loads and WebGL support
+  const hasLibraries = typeof window.glMatrix !== "undefined" && typeof window.ogl !== "undefined";
+  
+  const isWebGL2Supported = () => {
+    try {
+      const c = document.createElement("canvas");
+      return !!(window.WebGL2RenderingContext && (c.getContext("webgl2") || c.getContext("experimental-webgl2")));
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const useFallback = !hasLibraries || !isWebGL2Supported();
+
+  if (useFallback) {
+    console.warn("TOWS Radar: WebGL 2 or libraries (glMatrix/OGL) not available. Falling back to 2D buttons list.");
+    if (container && fallbackEl) {
+      container.classList.add("fallback-active");
+      
+      const fallbackBtns = fallbackEl.querySelectorAll(".tows-fallback-btn");
+      fallbackBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const index = parseInt(btn.getAttribute("data-index"), 10);
+          handleActiveItem(index);
+          
+          fallbackBtns.forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+        });
+      });
+      
+      // Initialize first item
+      handleActiveItem(0);
+    }
+    return () => {};
+  }
 
   const handleMovement = isMoving => {
     // Optional interactive styles
