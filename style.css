@@ -2561,7 +2561,17 @@ footer {
   100% { transform: translateY(0px) rotate(0deg); }
 }
 
-/* Eliminate WebGL subpixel scaling 1px line seams on Windows high-DPI scaling screens */
+.ferrofluid-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
 .ferrofluid-container canvas {
   position: absolute;
   top: -2px;

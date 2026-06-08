@@ -671,42 +671,103 @@ const initFerrofluid = () => {
     void mainImage(out vec4 fragColor, in vec2 fragCoord) {
       vec2 p = vUv;
       
+      // Mouse interaction: calculates distance for wave perturbations
+      float mDist = 999.0;
+      vec2 m = iMouse / iResolution.xy;
       if (uMouseEnabled > 0.5) {
-        vec2 m = iMouse / iResolution.xy;
-        float d = distance(p, m);
-        if (d < uMouseRadius) {
-          float f = (1.0 - d / uMouseRadius) * uMouseStrength * 0.15;
-          p += normalize(p - m) * f * uFluidity;
-        }
+        mDist = distance(p, m);
       }
 
+      // 1. Calculate rock reef heightmap using noise
       float spd = iTime * uSpeed;
-      vec2 dir = uFlow;
-
-      float peaks = vn(p + dir * spd, 3.0 * uScale, uTurbulence);
-      float peaks2 = vn(p + dir * spd + vec2(0.015, 0.015), 3.0 * uScale, uTurbulence);
-      float mapeaks = max(peaks, peaks2);
-
-      float mGlow = 0.0;
-      if (uMouseEnabled > 0.5) {
-        float md = distance(vUv, iMouse / iResolution.xy);
-        float rr = max(uMouseRadius, 0.02);
-        mGlow = exp(-md * md / (rr * rr)) * uMouseStrength;
+      float rock = vn(p, 1.5 * uScale, uTurbulence);
+      
+      // Interactive tide pool disturbance
+      if (mDist < uMouseRadius) {
+        float influence = (1.0 - mDist / uMouseRadius);
+        rock -= influence * uMouseStrength * 0.08;
       }
 
-      float band = (uRimWidth - abs((mapeaks - 0.4) * 2.0)) * 5.0;
-      float ltn = clamp(band - vn(p + dir * (iTime * uSpeed * 0.5), 60.0, 12.0) * uShimmer, 0.0, 1.0);
-      ltn = pow(ltn, uSharpness) * uGlow;
-      ltn *= clamp(1.0 - mGlow, 0.0, 1.0);
+      // EPS for normal calculation to render 3D lighting
+      vec2 eps = vec2(0.005, 0.0);
+      float rock_dx = vn(p + eps.xy, 1.5 * uScale, uTurbulence) - rock;
+      float rock_dy = vn(p + eps.yx, 1.5 * uScale, uTurbulence) - rock;
+      vec3 normal = normalize(vec3(-rock_dx * 3.5, -rock_dy * 3.5, 0.08));
 
-      float h = clamp(0.5 + (peaks - peaks2) * 0.8, 0.0, 1.0);
-      vec3 col = palette(h);
+      // Virtual light source (sky light/moonlight reflection)
+      vec3 lightDir = normalize(vec3(0.3, 0.5, 0.8));
+      float diffuse = max(0.0, dot(normal, lightDir));
+      float spec = pow(max(0.0, dot(reflect(-lightDir, normal), vec3(0.0, 0.0, 1.0))), 12.0);
 
-      vec3 outc = col * ltn;
-      outc += uMouseColor * mGlow * 0.15;
+      // 2. Tidal simulation (rising and falling tide cycle)
+      float tideCycle = sin(iTime * 0.2) * 0.12 + 0.46;
       
-      float a = clamp(max(outc.r, max(outc.g, outc.b)), 0.0, 1.0);
-      fragColor = vec4(outc, a * uOpacity);
+      // Shore wave ripples moving along the tide line
+      float waveRipple = sin(p.x * 4.0 - iTime * 0.6) * 0.03;
+      float currentTide = tideCycle + waveRipple;
+      
+      // 3. Submersion depth
+      float depth = currentTide - rock;
+
+      // 4. Bioluminescent foam line (where waves crash on the rocks)
+      float foamBase = exp(-pow(depth, 2.0) / 0.0008);
+      float foamNoise = vn(p * 15.0 - vec2(0.0, iTime * 0.35), 4.0, 0.5);
+      float foam = foamBase * (0.6 + 0.4 * foamNoise) * uGlow * 1.6;
+      
+      // 5. Compute color for water and rocks
+      vec3 finalColor = vec3(0.0);
+      float alpha = 0.0;
+
+      // Wetness factor (1.0 when submerged or very close to tide level)
+      float wetness = clamp(1.0 + depth * 4.0, 0.0, 1.0);
+      if (depth > 0.0) wetness = 1.0;
+
+      // Volcanic rock colors (charcoal/basalt dark gray)
+      vec3 rockBase = mix(vec3(0.015, 0.02, 0.025), vec3(0.05, 0.055, 0.065), rock);
+      
+      // Micro-texture of the rock
+      float micro = noise(p * 100.0);
+      rockBase += vec3(0.015, 0.012, 0.01) * micro;
+      
+      // Lit rock color
+      vec3 rockColor = rockBase * (0.25 + 0.75 * diffuse);
+      
+      // Specular highlights (stronger when wet)
+      float rockSpecular = spec * (0.12 + 0.48 * wetness) * uShimmer;
+
+      if (depth > 0.0) {
+        // Water is present (submerged)
+        float ripples = vn(p * 7.0 + vec2(iTime * 0.08, -iTime * 0.05), 3.0, 0.5);
+        vec3 waterBase = mix(uColor0, uColor3, clamp(depth * 5.0 + ripples * 0.15, 0.0, 1.0));
+        float waterGlow = (0.25 + 0.75 * ripples) * clamp(depth * 4.0, 0.0, 1.0) * uGlow;
+        float plankton = pow(max(0.0, vn(p * 20.0 + vec2(0.0, iTime * 0.15), 5.0, 0.3) - 0.6) * 2.5, 4.0) * uShimmer;
+        
+        finalColor = waterBase * waterGlow + uColor3 * plankton;
+        
+        // Blend in tide line foam
+        vec3 foamColor = mix(uColor3, uColor4, foamNoise);
+        finalColor += foamColor * foam;
+        
+        alpha = clamp(max(finalColor.r, max(finalColor.g, finalColor.b)), 0.15, 1.0);
+      } else {
+        // Exposed wet volcanic reef
+        finalColor = rockColor + vec3(0.65, 0.85, 1.0) * rockSpecular;
+        
+        // Dampened foam at the wet edge
+        vec3 foamColor = mix(uColor3, uColor4, foamNoise);
+        finalColor += foamColor * foam * 0.6;
+        
+        alpha = clamp(max(finalColor.r, max(finalColor.g, finalColor.b)), 0.08, 1.0);
+      }
+
+      // Add mouse cursor light ring (disturbing bioluminescent algae)
+      if (mDist < uMouseRadius) {
+        float mGlow = exp(-pow(mDist / uMouseRadius, 2.0) * 4.0) * uMouseStrength * 0.45;
+        finalColor += mix(uColor3, uColor4, sin(iTime + p.x * 10.0) * 0.5 + 0.5) * mGlow;
+        alpha = max(alpha, mGlow);
+      }
+
+      fragColor = vec4(finalColor, alpha * uOpacity);
     }
 
     void main() {
